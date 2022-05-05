@@ -1,5 +1,5 @@
 ## textgenrnn_discord_bot
-A simple Python script to turn a model into a functioning Discord bot.
+A simple Python script to turn a neural network into a functioning Discord bot.
 
 **Before continuing, visit the repository for [textgenrnn](https://github.com/minimaxir/textgenrnn) and follow the instructions there to prepare a trained model. You will need a trained model to use this script.**
 
