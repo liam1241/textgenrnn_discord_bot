@@ -1,0 +1,4 @@
+**/donotcommit
+**/.nova
+.env
+textgenrnn_weights.hdf5
