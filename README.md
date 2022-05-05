@@ -32,7 +32,7 @@ This started as a personal project and was later developed into a generalized sc
 ### Usage
 Clone the repository to a directory on your local system:
 
-`git clone [url here]`
+`git clone https://github.com/liam1241/textgenrnn_discord_bot`
 
 Navigate to the directory and create a .env file from the template to use:
 
