@@ -29,7 +29,6 @@ from textgenrnn import textgenrnn  # noqa: E402
 
 # Load constants from .env file
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
-BOT_PREFIX = os.getenv("BOT_PREFIX")
 BOT_NAME = os.getenv("BOT_NAME")
 MINIMUM_TEMPERATURE = os.getenv("MINIMUM_TEMPERATURE")
 MAXIMUM_TEMPERATURE = os.getenv("MAXIMUM_TEMPERATURE")
@@ -209,33 +208,8 @@ async def on_ready():
     print("────────────────────────────────────────")
     print("Bot Name:", BOT_NAME)
     print("Connected to Discord As:", discordpy_client.user)
-    print("Bot Prefix:", BOT_PREFIX)
     print("────────────────────────────────────────")
     return "Finished on_ready() actions"
-
-
-@discordpy_client.event
-async def on_message(message):
-    """Responds to new messages using the BOT_PREFIX specified in .env
-
-    :param: message: the new message received by the discordpy_client
-    :return: a string indicating a message was sent
-    """
-    message_content = message.content
-    # Checks if message has at least 1 character
-    # Messages with only an image have 0 characters
-    if len(message_content) > 0:
-        # Checks if message author is the bot, to avoid replying to itself
-        if message.author == discordpy_client.user:
-            return
-        # Generates the message and responds if set prefix is used
-        if message_content.startswith(BOT_PREFIX):
-            # Displays typing indicator while message is generating
-            async with message.channel.typing():
-                generation_prefix = message_content[len(BOT_PREFIX):1999]
-                generated_text = await generate_message(generation_prefix)
-            await message.channel.send(generated_text)
-            return "Message sent"
 
 
 @interactions_client.command(
