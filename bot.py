@@ -20,7 +20,9 @@ load_dotenv()
 SUPPRESS_LOGGING = os.getenv("SUPPRESS_LOGGING")
 if SUPPRESS_LOGGING == "1":
     basicConfig(level=ERROR)
-    os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+    os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+    sys.stdout = open(os.devnull, "w")
+    sys.stderr = open(os.devnull, "w")
 
 # Finish Importing Third-Party Modules
 import interactions  # noqa: E402
@@ -43,7 +45,12 @@ PROMPT_COMMAND_TYPING_MESSAGE = os.getenv("PROMPT_COMMAND_TYPING_MESSAGE")
 PROMPT_INPUT_DESCRIPTION = os.getenv("PROMPT_INPUT_DESCRIPTION")
 
 # Print starting message
+sys.stdout = sys.__stdout__
+sys.stderr = sys.__stderr__
 print("[Starting textgenrnn_discord_bot]")
+if SUPPRESS_LOGGING == "1":
+    sys.stdout = open(os.devnull, "w")
+    sys.stderr = open(os.devnull, "w")
 
 # Create library client instances
 interactions_client = interactions.Client(token=DISCORD_TOKEN)
@@ -65,8 +72,8 @@ async def generate_message(generation_prefix):
     :param: generation_prefix: an optional prefix used to prompt the model
     :return: the generated message, including the prefix
     """
+    # Suppress status messages if desired
     main_textgenrnn = textgenrnn(MODEL_FILE_NAME)
-    # Determine the message's temperature
     random_temperature = random.uniform(
         float(MINIMUM_TEMPERATURE), float(MAXIMUM_TEMPERATURE)
     )
@@ -228,10 +235,15 @@ async def on_start():
     )
     status_thread.start()
     # Print starting message and info about bot
+    sys.stdout = sys.__stdout__
+    sys.stderr = sys.__stderr__
     print("[textgenrnn_discord_bot has started]")
     print("────────────────────────────────────────")
     print("Bot Name:", BOT_NAME)
     print("────────────────────────────────────────")
+    if SUPPRESS_LOGGING == "1":
+        sys.stdout = open(os.devnull, "w")
+        sys.stderr = open(os.devnull, "w")
     return "Finished on_ready() actions"
 
 
