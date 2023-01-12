@@ -20,10 +20,9 @@ load_dotenv()
 SUPPRESS_LOGGING = os.getenv("SUPPRESS_LOGGING")
 if SUPPRESS_LOGGING == "1":
     basicConfig(level=ERROR)
-    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+    os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
 # Finish Importing Third-Party Modules
-import discord  # noqa: E402
 import interactions  # noqa: E402
 from textgenrnn import textgenrnn  # noqa: E402
 
@@ -47,9 +46,11 @@ PROMPT_INPUT_DESCRIPTION = os.getenv("PROMPT_INPUT_DESCRIPTION")
 print("[Starting textgenrnn_discord_bot]")
 
 # Create library client instances
-discordpy_client = discord.Client()
 interactions_client = interactions.Client(token=DISCORD_TOKEN)
 http_client = interactions.api.http.HTTPClient(DISCORD_TOKEN)
+
+# Define presence activity type objects
+activity_type = interactions.api.models.presence.PresenceActivityType
 
 
 async def generate_message(generation_prefix):
@@ -116,8 +117,17 @@ async def game_status():
     """
     status_message = await generate_message("Playing ")
     trimmed_status = status_message[8:135]
-    await discordpy_client.change_presence(
-        activity=discord.Game(name=trimmed_status)
+    await interactions_client.change_presence(
+        interactions.api.models.presence.ClientPresence(
+            activities=[
+                interactions.api.models.presence.PresenceActivity(
+                    name=trimmed_status,
+                    type=activity_type.GAME,
+                )
+            ],
+            status="online",
+            afk=False,
+        )
     )
     return trimmed_status
 
@@ -132,9 +142,16 @@ async def watching_status():
     """
     status_message = await generate_message("Watching ")
     trimmed_status = status_message[9:136]
-    await discordpy_client.change_presence(
-        activity=discord.Activity(
-            type=discord.ActivityType.watching, name=trimmed_status
+    await interactions_client.change_presence(
+        interactions.api.models.presence.ClientPresence(
+            activities=[
+                interactions.api.models.presence.PresenceActivity(
+                    name=trimmed_status,
+                    type=activity_type.WATCHING,
+                )
+            ],
+            status="online",
+            afk=False,
         )
     )
     return trimmed_status
@@ -150,9 +167,16 @@ async def listening_status():
     """
     status_message = await generate_message("Listening to ")
     trimmed_status = status_message[13:140]
-    await discordpy_client.change_presence(
-        activity=discord.Activity(
-            type=discord.ActivityType.listening, name=trimmed_status
+    await interactions_client.change_presence(
+        interactions.api.models.presence.ClientPresence(
+            activities=[
+                interactions.api.models.presence.PresenceActivity(
+                    name=trimmed_status,
+                    type=activity_type.LISTENING,
+                )
+            ],
+            status="online",
+            afk=False,
         )
     )
     return trimmed_status
@@ -182,8 +206,8 @@ async def random_status():
     return False
 
 
-@discordpy_client.event
-async def on_ready():
+@interactions_client.event
+async def on_start():
     """Runs startup actions once the discordpy_client initializes
 
     Takes care of a few startup tasks including finding the emoji ID, setting
@@ -207,7 +231,6 @@ async def on_ready():
     print("[textgenrnn_discord_bot has started]")
     print("────────────────────────────────────────")
     print("Bot Name:", BOT_NAME)
-    print("Connected to Discord As:", discordpy_client.user)
     print("────────────────────────────────────────")
     return "Finished on_ready() actions"
 
@@ -263,13 +286,5 @@ async def prompt_command(ctx: interactions.CommandContext, input: str):
     return "Prompt command message sent"
 
 
-# Run bot clients in separate threads to prevent issues
-main_bot_loop = asyncio.get_event_loop()
-discordpy_task = main_bot_loop.create_task(
-    discordpy_client.start(DISCORD_TOKEN)
-)
-interactions_task = main_bot_loop.create_task(interactions_client.start())
-gathered_bot_loops = asyncio.gather(
-    interactions_task, discordpy_task, loop=main_bot_loop
-)
-main_bot_loop.run_until_complete(gathered_bot_loops)
+# Run interactions bot client
+interactions_client.start()
