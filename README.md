@@ -6,9 +6,9 @@ A simple Python script to turn a neural network into a functioning Discord bot.
 This started as a personal project and was later developed into a generalized script that can be used for any textgenrnn model. Credit to [Max Woolf (minimaxir)](https://github.com/minimaxir) for creating textgenrnn, which serves as the foundation for this project. Using this script, you can have a fully functional Discord bot just by editing the .env file. You shouldn't have to actually touch the code (unless you want to 😊).
 
 ### Bot Features
-- Slash command and custom prefix support
+- Slash command support
 - Allows the user to prompt the model's response
-- Typing indicator while message generates
+- Status message while response generates
 - Bot generates it's own status that updates every hour
 - Can be ran on a CPU (no GPU required)
 
@@ -26,7 +26,6 @@ This started as a personal project and was later developed into a generalized sc
 		- Version 2.1.0 or later
 	- textgenrnn (`pip install textgenrnn`)
 	- dotenv (`pip install python-dotenv`)
-	- discord.py (`pip install discord.py`)
 	- interactions.py (`pip install discord-py-interactions`)
 
 ### Usage
